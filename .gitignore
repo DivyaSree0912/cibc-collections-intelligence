@@ -21,6 +21,7 @@ data/raw/
 
 # Local logs
 logs/*.log
+logs/*.jsonl
 
 # Operating System
 .DS_Store

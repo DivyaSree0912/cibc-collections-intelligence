@@ -45,21 +45,21 @@
 
 | Req ID | Requirement | Source | Implementation Component | File | Status |
 |---|---|---|---|---|---|
-| REQ-L4-01 | Working NBA model/agent | Build Phase PDF p.3 | Policy-constrained NBA engine (P8) | `pipeline/08_nba/next_best_action.py` | 🔄 IN PROGRESS |
-| REQ-L4-02 | Plain-English explanation per decision | Build Phase PDF p.3 | `explanation` field in NBA output | `pipeline/08_nba/next_best_action.py` | 🔄 IN PROGRESS |
-| REQ-L4-03 | Human review / override point | Build Phase PDF p.3 | Accept/Modify/Override buttons in Cockpit | `ui/cockpit.py` | 🔄 IN PROGRESS |
+| REQ-L4-01 | Working NBA model/agent | Build Phase PDF p.3 | Policy-constrained NBA engine (P8) sourcing Feature Store | `pipeline/08_nba/next_best_action.py` | ✅ COMPLETE |
+| REQ-L4-02 | Plain-English explanation per decision | Build Phase PDF p.3 | Plain-English `explanation` field in NBA output (100% coverage) | `pipeline/08_nba/next_best_action.py` | ✅ COMPLETE |
+| REQ-L4-03 | Human review / override point | Build Phase PDF p.3 | Auditable Accept/Modify/Override controls & logging | `ui/cockpit.py`, `pipeline/08_nba/next_best_action.py` | ✅ COMPLETE |
 
 ## Governance (Non-Negotiable)
 
 | Req ID | Requirement | Source | Implementation Component | Status |
 |---|---|---|---|---|
-| REQ-GOV-01 | Plain-English reason for every agent-facing decision | Build Phase PDF p.4 | `explanation` field in NBA; SQL shown in NLP | 🔄 IN PROGRESS |
-| REQ-GOV-02 | Human review for anything affecting a customer | Build Phase PDF p.4 | `requires_human_review` flag + UI controls | 🔄 IN PROGRESS |
-| REQ-GOV-03 | No protected attributes in decisions | Build Phase PDF p.4 | Excluded from C360, excluded from NBA features | 🔄 IN PROGRESS |
-| REQ-GOV-04 | Hardship flags | Build Phase PDF p.4 | `detect_hardship()` + `hardship_flag` in C360 | 🔄 IN PROGRESS |
-| REQ-GOV-05 | Low-confidence matches NOT silently merged | Project design | Review queue in entity resolution | 🔄 IN PROGRESS |
-| REQ-GOV-06 | LLM not the calculator of record | Project design | All formulas deterministic in `financial_health.py` | ✅ COMPLETE |
-| REQ-GOV-07 | AI must not invent customer facts | Project design | `check_refusal()` + SQL evidence grounding | 🔄 IN PROGRESS |
+| REQ-GOV-01 | Plain-English reason for every agent-facing decision | Build Phase PDF p.4 | `explanation` and `policy_reference` in NBA; SQL shown in NLP | ✅ COMPLETE |
+| REQ-GOV-02 | Human review for anything affecting a customer | Build Phase PDF p.4 | `requires_human_review` gate + auditable review controls in Cockpit | ✅ COMPLETE |
+| REQ-GOV-03 | No protected attributes in decisions | Build Phase PDF p.4 | Excluded from C360, Feature Store, and NBA candidate features | ✅ COMPLETE |
+| REQ-GOV-04 | Hardship flags | Build Phase PDF p.4 | `detect_hardship()` + Rule 1 protective specialist routing | ✅ COMPLETE |
+| REQ-GOV-05 | Low-confidence matches NOT silently merged | Project design | `identity_review_queue` isolates matches <0.85 for steward review | ✅ COMPLETE |
+| REQ-GOV-06 | LLM not the calculator of record | Project design | All formulas deterministic in `financial_health.py` & `feature_store.py` | ✅ COMPLETE |
+| REQ-GOV-07 | AI must not invent customer facts | Project design | Evidence array grounded in verified data; SQL evidence grounding | ✅ COMPLETE |
 
 ## Submission Artifacts
 

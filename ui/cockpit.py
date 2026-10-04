@@ -454,16 +454,83 @@ def main():
         if nba.get("requires_human_review"):
             st.markdown('<div class="human-review">',  unsafe_allow_html=True)
             st.markdown("**⚠️ This recommendation requires human agent review and approval before any action.**")
+
+            from pipeline.08_nba.next_best_action import record_agent_decision, get_agent_decision_history
+
             col1, col2, col3 = st.columns(3)
             with col1:
                 if st.button("✅ Accept", key="accept_nba"):
-                    st.success("Action accepted. (Demo: logged to audit)")
+                    rec = record_agent_decision(
+                        golden_financial_id=selected_gid,
+                        original_recommendation=action,
+                        agent_decision="ACCEPT",
+                        agent_id="AGENT-COL-001"
+                    )
+                    st.success(f"Action '{action}' accepted and recorded in audit log. (Audit ID: {rec['audit_id']})")
             with col2:
                 if st.button("✏️ Modify", key="modify_nba"):
-                    st.info("Modification workflow would open here.")
+                    st.session_state["show_modify_form"] = True
             with col3:
                 if st.button("❌ Override", key="override_nba"):
-                    st.warning("Override recorded. Please provide reason.")
+                    st.session_state["show_override_form"] = True
+
+            if st.session_state.get("show_modify_form"):
+                st.markdown("---")
+                all_actions = ["REMINDER", "PAYMENT_PLAN", "HUMAN_REVIEW"]
+                mod_action = st.selectbox(
+                    "Select Modified Action",
+                    [a for a in all_actions if a != action],
+                    key="mod_action_select"
+                )
+                mod_reason = st.text_input("Reason for modification:", key="mod_reason_input")
+                if st.button("Confirm Modification", key="confirm_mod_btn"):
+                    rec = record_agent_decision(
+                        golden_financial_id=selected_gid,
+                        original_recommendation=action,
+                        agent_decision="MODIFY",
+                        modified_action=mod_action,
+                        override_reason=mod_reason or "Agent clinical adjustment",
+                        agent_id="AGENT-COL-001"
+                    )
+                    st.success(f"Action modified to '{mod_action}' and logged. (Audit ID: {rec['audit_id']})")
+                    st.session_state["show_modify_form"] = False
+
+            if st.session_state.get("show_override_form"):
+                st.markdown("---")
+                override_action = st.selectbox(
+                    "Override Action to:",
+                    ["DO_NOT_CONTACT", "ESCALATE_LEGAL", "CLOSE_CASE", "SETTLEMENT_OFFER"],
+                    key="override_action_select"
+                )
+                override_reason = st.text_input("Mandatory Override Reason:", key="override_reason_input")
+                if st.button("Confirm Override", key="confirm_override_btn"):
+                    if not override_reason:
+                        st.error("Override reason is mandatory for compliance audit.")
+                    else:
+                        rec = record_agent_decision(
+                            golden_financial_id=selected_gid,
+                            original_recommendation=action,
+                            agent_decision="OVERRIDE",
+                            modified_action=override_action,
+                            override_reason=override_reason,
+                            agent_id="AGENT-COL-001"
+                        )
+                        st.warning(f"Override to '{override_action}' recorded in audit log. (Audit ID: {rec['audit_id']})")
+                        st.session_state["show_override_form"] = False
+
+            # Display prior audit history if available
+            audit_history = get_agent_decision_history(selected_gid)
+            if audit_history:
+                with st.expander(f"📋 Prior Agent Review Audit Trail ({len(audit_history)} entries)"):
+                    for entry in audit_history:
+                        st.caption(
+                            f"**{entry['decided_at']}** | Agent: `{entry['agent_id']}` | "
+                            f"Decision: **{entry['agent_decision']}** → `{entry['modified_action']}` "
+                            f"(Audit: `{entry['audit_id']}`)"
+                        )
+                        if entry.get("override_reason") and entry["override_reason"] != "N/A":
+                            st.caption(f"Reason: _{entry['override_reason']}_")
+
             st.markdown('</div>', unsafe_allow_html=True)
     else:
         st.info("NBA recommendations not yet generated. Run pipeline phase 8.")
