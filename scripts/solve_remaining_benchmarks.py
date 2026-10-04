@@ -39,16 +39,16 @@ print("Card columns with 'charge' or 'write':", [r[0] for r in con.execute("DESC
 print("Loan columns with 'charge' or 'write':", [r[0] for r in con.execute("DESCRIBE loan_accounts").fetchall() if 'charge' in r[0] or 'write' in r[0] or 'loss' in r[0]])
 
 q15_card = con.execute("""
-    SELECT 'card' AS product, count(*) AS accounts, round(sum(charge_off_amount), 2) AS amount
+    SELECT 'card' AS product, count(*) AS accounts, round(sum(chargeoff_amount), 2) AS amount
     FROM card_accounts
-    WHERE charge_off_date >= DATE '2025-09-28' AND charge_off_date <= DATE '2026-09-28'
+    WHERE chargeoff_date >= DATE '2025-09-28' AND chargeoff_date <= DATE '2026-09-28'
 """).fetchall()
 print("Card charge-offs:", q15_card)
 
 q15_loan = con.execute("""
-    SELECT product_type AS product, count(*) AS accounts, round(sum(charge_off_amount), 2) AS amount
+    SELECT product_type AS product, count(*) AS accounts, round(sum(chargeoff_amount), 2) AS amount
     FROM loan_accounts
-    WHERE charge_off_date >= DATE '2025-09-28' AND charge_off_date <= DATE '2026-09-28'
+    WHERE chargeoff_date >= DATE '2025-09-28' AND chargeoff_date <= DATE '2026-09-28'
     GROUP BY 1 ORDER BY 1
 """).fetchall()
 print("Loan charge-offs:", q15_loan)
