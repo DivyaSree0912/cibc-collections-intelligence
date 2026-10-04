@@ -133,6 +133,7 @@ REFUSED_PATTERNS = [
     # Protected attributes
     r"\bgender\b", r"\bsex\b", r"\bmarital\b", r"\bcitizenship\b",
     r"\bnewcomer\b", r"\baccessibility\b", r"\baccent\b", r"\bhousehold\b",
+    r"\bpostal\b", r"\bpostal area\b", r"\bfsa\b",
     # Out-of-scope
     r"\bapprove.{0,20}loan\b", r"\bgrant.{0,20}credit\b",
     r"\brace\b", r"\bethnicity\b", r"\breligion\b",
