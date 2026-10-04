@@ -28,3 +28,4 @@ Thumbs.db
 
 data/golden/collection_memory.parquet
 data/golden/*.parquet
+data/features/*.parquet

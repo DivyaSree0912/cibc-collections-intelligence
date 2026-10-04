@@ -1,6 +1,6 @@
 # Data Quality & Integrity Report
 
-**Execution Timestamp:** 2026-10-04T11:01:51.625457
+**Execution Timestamp:** 2026-10-04T11:32:53.246250
 **Target Database:** `data/maple_collections.duckdb`
 
 This report documents automated validation checks across all core domain tables,

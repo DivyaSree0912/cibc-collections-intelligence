@@ -1,10 +1,10 @@
 {
-  "run_timestamp": "2026-10-03T12:18:40.702135",
-  "elapsed_seconds": 101.504508,
+  "run_timestamp": "2026-10-04T11:32:33.618767",
+  "elapsed_seconds": 67.651625,
   "phases": {
     "P1_ingest": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:18:40.846196",
+      "run_ts": "2026-10-04T11:32:33.695173",
       "tables_loaded": 31,
       "total_rows": 68162322,
       "results": [
@@ -229,7 +229,7 @@
     },
     "P2_quality": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:19:13.072809",
+      "run_ts": "2026-10-04T11:32:53.246250",
       "summary": {
         "total": 18,
         "pass": 14,
@@ -239,31 +239,51 @@
     },
     "P3_identity": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:19:41.897723",
+      "run_ts": "2026-10-04T11:33:13.781790",
       "total_source_links": 1788432,
       "unique_golden_ids": 1312053,
       "review_queue_count": 10365,
-      "elapsed_seconds": 14.73
+      "elapsed_seconds": 9.16
     },
     "P4_c360": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:19:57.476336",
+      "run_ts": "2026-10-04T11:33:23.396555",
       "total_customers": 1001879,
       "active_collections_customers": 93240,
       "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\golden_customer_360.parquet",
-      "elapsed_seconds": 8.47
+      "elapsed_seconds": 5.16
     },
     "P5_memory": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:20:06.066662",
+      "run_ts": "2026-10-04T11:33:28.626799",
       "total_events": 3581511,
       "hardship_flagged_events": 84289,
       "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\collection_memory.parquet",
-      "elapsed_seconds": 11.98
+      "elapsed_seconds": 7.5
+    },
+    "P6_features": {
+      "status": "OK",
+      "run_ts": "2026-10-04T11:33:37.602714+00:00",
+      "features_defined": 31,
+      "total_records_scored": 1001879,
+      "training_dataset_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\features\\training_features.parquet",
+      "feature_store_parquet": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\features\\feature_store.parquet",
+      "training_serving_parity": "PASSED (Zero Skew)",
+      "delinquency_distribution": {
+        "CURRENT": 904748,
+        "1-30": 33974,
+        "31-60": 24282,
+        "61-90": 15555,
+        "91-120": 9709,
+        "121-150": 5828,
+        "180+": 3896,
+        "151-180": 3887
+      },
+      "elapsed_seconds": 2.47
     },
     "P7_health": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:20:20.215246",
+      "run_ts": "2026-10-04T11:33:40.080254",
       "records_processed": 1001879,
       "health_distribution": {
         "GOOD": 895535,
@@ -273,11 +293,11 @@
       },
       "human_review_required": 62882,
       "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\financial_health_features.parquet",
-      "elapsed_seconds": 1.01
+      "elapsed_seconds": 0.61
     },
     "P8_nba": {
       "status": "OK",
-      "run_ts": "2026-10-03T12:20:21.311489",
+      "run_ts": "2026-10-04T11:33:40.736140",
       "total_recommendations": 93240,
       "action_distribution": {
         "HUMAN_REVIEW": 58541,
@@ -286,7 +306,7 @@
       },
       "human_review_required": 61951,
       "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\nba_recommendations.parquet",
-      "elapsed_seconds": 0.85
+      "elapsed_seconds": 0.49
     }
   },
   "overall_status": "OK"

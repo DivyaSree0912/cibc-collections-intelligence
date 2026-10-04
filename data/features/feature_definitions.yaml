@@ -1,0 +1,445 @@
+# data/features/feature_definitions.yaml
+# CIBC Collections Intelligence — Feature Definitions & Lineage Registry
+# Conforms to Open Data Contract Standard (ODCS) & Governed Banking Feature Store Specification
+# Snapshot Date: 2026-09-28 | Version: 1.0.0
+
+metadata:
+  feature_store_name: "cibc_collections_feature_store"
+  version: "1.0.0"
+  snapshot_date: "2026-09-28"
+  owner: "Collections Intelligence & Analytics Data Office"
+  primary_entity: "golden_financial_id"
+  fairness_policy: "OSFI E-23 / FCAC Fair Collections Compliance"
+  calculator_of_record: "Deterministic Pipeline Engine (Zero LLM Financial Calculations)"
+  protected_attributes_excluded: true
+
+governance:
+  excluded_protected_attributes:
+    - gender
+    - gender_code
+    - marital_status
+    - citizenship
+    - citizenship_status
+    - race
+    - ethnicity
+    - religion
+    - household
+    - newcomer
+    - accessibility
+    - accent
+    - customer_fsa
+    - postal_code
+  audit_requirements:
+    - "Every feature must originate from governed raw/golden tables with documented lineage."
+    - "No proxy demographic or geographic variables permitted in credit/collection decision features."
+    - "Online serving must achieve zero mathematical skew relative to offline batch features."
+
+features:
+  # ─── IDENTITY & METADATA ────────────────────────────────────────────────────────
+  - name: "golden_financial_id"
+    domain: "identity"
+    data_type: "VARCHAR"
+    description: "Unique persistent system-internal Golden Financial ID (e.g., GID-0000001)."
+    source_table: "golden_customer_360"
+    source_columns: ["golden_financial_id"]
+    transformation_sql: "golden_customer_360.golden_financial_id"
+    transformation_python: "row['golden_financial_id']"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: false
+    used_in_live_scoring: true
+
+  - name: "as_of_date"
+    domain: "metadata"
+    data_type: "VARCHAR"
+    description: "Snapshot observation date for point-in-time correctness."
+    source_table: "golden_customer_360"
+    source_columns: ["snapshot_date"]
+    transformation_sql: "COALESCE(golden_customer_360.snapshot_date, '2026-09-28')"
+    transformation_python: "row.get('snapshot_date', '2026-09-28')"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: false
+    used_in_live_scoring: true
+
+  # ─── EXPOSURE DOMAIN ─────────────────────────────────────────────────────────────
+  - name: "total_aggregate_exposure"
+    domain: "exposure"
+    data_type: "DOUBLE"
+    description: "Total outstanding credit balance across all accounts ($CAD)."
+    source_table: "golden_customer_360"
+    source_columns: ["total_aggregate_exposure"]
+    transformation_sql: "ROUND(COALESCE(total_aggregate_exposure, 0.0), 2)"
+    transformation_python: "round(float(row.get('total_aggregate_exposure') or 0.0), 2)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "total_overdue_balance"
+    domain: "exposure"
+    data_type: "DOUBLE"
+    description: "Total overdue arrears across all collections cases ($CAD)."
+    source_table: "golden_customer_360"
+    source_columns: ["total_overdue_balance"]
+    transformation_sql: "ROUND(COALESCE(total_overdue_balance, 0.0), 2)"
+    transformation_python: "round(float(row.get('total_overdue_balance') or 0.0), 2)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "overdue_to_exposure_ratio"
+    domain: "exposure"
+    data_type: "DOUBLE"
+    description: "Proportion of total exposure that is in arrears [0.0 - 1.0]."
+    source_table: "golden_customer_360"
+    source_columns: ["total_overdue_balance", "total_aggregate_exposure"]
+    transformation_sql: "ROUND(LEAST(COALESCE(total_overdue_balance, 0.0) / NULLIF(COALESCE(total_aggregate_exposure, 0.0), 0.0), 1.0), 4)"
+    transformation_python: "round(min(float(row.get('total_overdue_balance') or 0.0) / max(float(row.get('total_aggregate_exposure') or 0.0), 0.0001), 1.0) if float(row.get('total_aggregate_exposure') or 0.0) > 0 else 0.0, 4)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "declared_annual_income"
+    domain: "exposure"
+    data_type: "BIGINT"
+    description: "Customer gross annual income from primary CRM record ($CAD)."
+    source_table: "golden_customer_360"
+    source_columns: ["declared_annual_income"]
+    transformation_sql: "COALESCE(declared_annual_income, 60000)"
+    transformation_python: "int(row.get('declared_annual_income') or 60000)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "exposure_score"
+    domain: "exposure"
+    data_type: "DOUBLE"
+    description: "Exposure-to-annual-income ratio capped at 1.0 (Branch A score)."
+    source_table: "golden_customer_360"
+    source_columns: ["total_aggregate_exposure", "declared_annual_income"]
+    transformation_sql: "ROUND(LEAST(COALESCE(total_aggregate_exposure, 0.0) / NULLIF(COALESCE(declared_annual_income, 60000.0), 0.0), 1.0), 4)"
+    transformation_python: "round(min(float(row.get('total_aggregate_exposure') or 0.0) / max(float(row.get('declared_annual_income') or 60000.0), 0.0001), 1.0), 4)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "exposure_label"
+    domain: "exposure"
+    data_type: "VARCHAR"
+    description: "Categorical exposure tier: LOW (<0.25), MODERATE (<0.50), HIGH (<0.75), SEVERE."
+    source_table: "derived"
+    source_columns: ["exposure_score"]
+    transformation_sql: "CASE WHEN exposure_score < 0.25 THEN 'LOW' WHEN exposure_score < 0.50 THEN 'MODERATE' WHEN exposure_score < 0.75 THEN 'HIGH' ELSE 'SEVERE' END"
+    transformation_python: "'LOW' if exposure_score < 0.25 else 'MODERATE' if exposure_score < 0.50 else 'HIGH' if exposure_score < 0.75 else 'SEVERE'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  # ─── CASHFLOW & AFFORDABILITY DOMAIN ─────────────────────────────────────────────
+  - name: "estimated_monthly_inflow"
+    domain: "cashflow"
+    data_type: "DOUBLE"
+    description: "Estimated monthly gross income (annual income / 12) ($CAD)."
+    source_table: "golden_customer_360"
+    source_columns: ["estimated_monthly_inflow", "declared_annual_income"]
+    transformation_sql: "ROUND(COALESCE(estimated_monthly_inflow, COALESCE(declared_annual_income, 60000.0) / 12.0), 2)"
+    transformation_python: "round(float(row.get('estimated_monthly_inflow') or (float(row.get('declared_annual_income') or 60000.0) / 12.0)), 2)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "estimated_monthly_emi"
+    domain: "cashflow"
+    data_type: "DOUBLE"
+    description: "Estimated monthly minimum debt service obligation (~2.5% of total exposure) ($CAD)."
+    source_table: "derived"
+    source_columns: ["total_aggregate_exposure"]
+    transformation_sql: "ROUND(COALESCE(total_aggregate_exposure, 0.0) * 0.025, 2)"
+    transformation_python: "round(float(row.get('total_aggregate_exposure') or 0.0) * 0.025, 2)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "available_monthly_surplus"
+    domain: "cashflow"
+    data_type: "DOUBLE"
+    description: "Net disposable monthly liquidity after servicing debt (inflow - EMI) ($CAD)."
+    source_table: "derived"
+    source_columns: ["estimated_monthly_inflow", "estimated_monthly_emi"]
+    transformation_sql: "ROUND(estimated_monthly_inflow - estimated_monthly_emi, 2)"
+    transformation_python: "round(estimated_monthly_inflow - estimated_monthly_emi, 2)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "dsr"
+    domain: "cashflow"
+    data_type: "DOUBLE"
+    description: "Debt Service Ratio: estimated monthly EMI divided by estimated monthly inflow."
+    source_table: "derived"
+    source_columns: ["estimated_monthly_emi", "estimated_monthly_inflow"]
+    transformation_sql: "ROUND(estimated_monthly_emi / NULLIF(estimated_monthly_inflow, 0.0), 4)"
+    transformation_python: "round(estimated_monthly_emi / estimated_monthly_inflow, 4) if estimated_monthly_inflow > 0 else None"
+    nullable: true
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "dsr_category"
+    domain: "cashflow"
+    data_type: "VARCHAR"
+    description: "Debt burden tier: LOW (<0.35), MODERATE (<0.60), HIGH (<0.80), SEVERE (>=0.80)."
+    source_table: "derived"
+    source_columns: ["dsr"]
+    transformation_sql: "CASE WHEN dsr IS NULL THEN 'MODERATE' WHEN dsr < 0.35 THEN 'LOW' WHEN dsr < 0.60 THEN 'MODERATE' WHEN dsr < 0.80 THEN 'HIGH' ELSE 'SEVERE' END"
+    transformation_python: "'MODERATE' if dsr is None else 'LOW' if dsr < 0.35 else 'MODERATE' if dsr < 0.60 else 'HIGH' if dsr < 0.80 else 'SEVERE'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "cashflow_stress_label"
+    domain: "cashflow"
+    data_type: "VARCHAR"
+    description: "Cashflow stress tier derived from portfolio DPD: SEVERE (>90), HIGH (>30), MODERATE (>0), LOW (0)."
+    source_table: "derived"
+    source_columns: ["max_dpd_across_portfolio"]
+    transformation_sql: "CASE WHEN max_dpd_across_portfolio > 90 THEN 'SEVERE' WHEN max_dpd_across_portfolio > 30 THEN 'HIGH' WHEN max_dpd_across_portfolio > 0 THEN 'MODERATE' ELSE 'LOW' END"
+    transformation_python: "'SEVERE' if max_dpd > 90 else 'HIGH' if max_dpd > 30 else 'MODERATE' if max_dpd > 0 else 'LOW'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "cashflow_score"
+    domain: "cashflow"
+    data_type: "DOUBLE"
+    description: "Normalized cashflow stress indicator: LOW=0.1, MODERATE=0.4, HIGH=0.7, SEVERE=0.9."
+    source_table: "derived"
+    source_columns: ["cashflow_stress_label"]
+    transformation_sql: "CASE cashflow_stress_label WHEN 'LOW' THEN 0.1 WHEN 'MODERATE' THEN 0.4 WHEN 'HIGH' THEN 0.7 ELSE 0.9 END"
+    transformation_python: "0.1 if cashflow_stress_label == 'LOW' else 0.4 if cashflow_stress_label == 'MODERATE' else 0.7 if cashflow_stress_label == 'HIGH' else 0.9"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  # ─── PAYMENT BEHAVIOUR DOMAIN ────────────────────────────────────────────────────
+  - name: "ptp_count_24m"
+    domain: "payment_behaviour"
+    data_type: "BIGINT"
+    description: "Total promises-to-pay arranged in the past 24 months."
+    source_table: "golden_customer_360"
+    source_columns: ["ptp_count_24m"]
+    transformation_sql: "COALESCE(ptp_count_24m, 0)"
+    transformation_python: "int(row.get('ptp_count_24m') or 0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "ptp_fulfilled_24m"
+    domain: "payment_behaviour"
+    data_type: "BIGINT"
+    description: "Total promises-to-pay successfully kept in the past 24 months."
+    source_table: "golden_customer_360"
+    source_columns: ["ptp_fulfilled_24m"]
+    transformation_sql: "COALESCE(ptp_fulfilled_24m, 0)"
+    transformation_python: "int(row.get('ptp_fulfilled_24m') or 0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "ptp_fulfillment_rate"
+    domain: "payment_behaviour"
+    data_type: "DOUBLE"
+    description: "Historical commitment reliability: percentage of PTPs kept [0.0 - 100.0%]."
+    source_table: "golden_customer_360"
+    source_columns: ["ptp_fulfillment_rate"]
+    transformation_sql: "COALESCE(ptp_fulfillment_rate, 0.0)"
+    transformation_python: "float(row.get('ptp_fulfillment_rate') or 0.0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "payment_behaviour_score"
+    domain: "payment_behaviour"
+    data_type: "DOUBLE"
+    description: "Governed behavioural score [0.0 - 1.0] combining PTP fulfillment and delinquency mitigation."
+    source_table: "derived"
+    source_columns: ["ptp_fulfillment_rate", "max_dpd_across_portfolio"]
+    transformation_sql: "ROUND((COALESCE(ptp_fulfillment_rate, 50.0) / 100.0 * 0.5) + (1.0 - LEAST(COALESCE(max_dpd_across_portfolio, 0) / 180.0, 1.0)) * 0.5, 4)"
+    transformation_python: "round(((float(row.get('ptp_fulfillment_rate') if row.get('ptp_fulfillment_rate') is not None else 50.0) / 100.0 * 0.5) + (1.0 - min(float(row.get('max_dpd_across_portfolio') or 0) / 180.0, 1.0)) * 0.5), 4)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "payment_label"
+    domain: "payment_behaviour"
+    data_type: "VARCHAR"
+    description: "Categorical behaviour tier: RELIABLE (>=0.75), MODERATE (>=0.50), POOR (<0.50)."
+    source_table: "derived"
+    source_columns: ["payment_behaviour_score"]
+    transformation_sql: "CASE WHEN payment_behaviour_score >= 0.75 THEN 'RELIABLE' WHEN payment_behaviour_score >= 0.50 THEN 'MODERATE' ELSE 'POOR' END"
+    transformation_python: "'RELIABLE' if payment_behaviour_score >= 0.75 else 'MODERATE' if payment_behaviour_score >= 0.50 else 'POOR'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  # ─── DELINQUENCY DOMAIN ──────────────────────────────────────────────────────────
+  - name: "max_dpd_across_portfolio"
+    domain: "delinquency"
+    data_type: "BIGINT"
+    description: "Maximum days past due across all customer loan and card accounts."
+    source_table: "golden_customer_360"
+    source_columns: ["max_dpd_across_portfolio"]
+    transformation_sql: "COALESCE(max_dpd_across_portfolio, 0)"
+    transformation_python: "int(row.get('max_dpd_across_portfolio') or 0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "active_collections_cases"
+    domain: "delinquency"
+    data_type: "BIGINT"
+    description: "Count of unresolved collections cases currently assigned to the customer."
+    source_table: "golden_customer_360"
+    source_columns: ["active_collections_cases"]
+    transformation_sql: "COALESCE(active_collections_cases, 0)"
+    transformation_python: "int(row.get('active_collections_cases') or 0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "delinquency_bucket"
+    domain: "delinquency"
+    data_type: "VARCHAR"
+    description: "Standard banking delinquency stage: CURRENT, 1-30, 31-60, 61-90, 91-120, 121-150, 151-180, 180+."
+    source_table: "derived"
+    source_columns: ["max_dpd_across_portfolio"]
+    transformation_sql: "CASE WHEN max_dpd_across_portfolio = 0 THEN 'CURRENT' WHEN max_dpd_across_portfolio <= 30 THEN '1-30' WHEN max_dpd_across_portfolio <= 60 THEN '31-60' WHEN max_dpd_across_portfolio <= 90 THEN '61-90' WHEN max_dpd_across_portfolio <= 120 THEN '91-120' WHEN max_dpd_across_portfolio <= 150 THEN '121-150' WHEN max_dpd_across_portfolio <= 180 THEN '151-180' ELSE '180+' END"
+    transformation_python: "'CURRENT' if max_dpd == 0 else '1-30' if max_dpd <= 30 else '31-60' if max_dpd <= 60 else '61-90' if max_dpd <= 90 else '91-120' if max_dpd <= 120 else '121-150' if max_dpd <= 150 else '151-180' if max_dpd <= 180 else '180+'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "is_delinquent"
+    domain: "delinquency"
+    data_type: "BOOLEAN"
+    description: "Boolean indicator of delinquency status (max_dpd > 0)."
+    source_table: "derived"
+    source_columns: ["max_dpd_across_portfolio"]
+    transformation_sql: "CASE WHEN max_dpd_across_portfolio > 0 THEN TRUE ELSE FALSE END"
+    transformation_python: "bool(max_dpd > 0)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "is_severe_delinquent"
+    domain: "delinquency"
+    data_type: "BOOLEAN"
+    description: "Boolean indicator of severe delinquency (max_dpd > 90 days)."
+    source_table: "derived"
+    source_columns: ["max_dpd_across_portfolio"]
+    transformation_sql: "CASE WHEN max_dpd_across_portfolio > 90 THEN TRUE ELSE FALSE END"
+    transformation_python: "bool(max_dpd > 90)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  # ─── GOVERNED DECISION SIGNALS & COMPOSITE HEALTH ──────────────────────────────
+  - name: "composite_health_score"
+    domain: "composite_health"
+    data_type: "DOUBLE"
+    description: "Governed 3-branch weighted score [0.0 - 1.0]: 35% exposure, 35% cashflow, 30% behaviour."
+    source_table: "derived"
+    source_columns: ["exposure_score", "cashflow_stress_label", "payment_behaviour_score"]
+    transformation_sql: "ROUND((1.0 - exposure_score) * 0.35 + (CASE cashflow_stress_label WHEN 'LOW' THEN 0.9 WHEN 'MODERATE' THEN 0.6 WHEN 'HIGH' THEN 0.3 ELSE 0.1 END) * 0.35 + payment_behaviour_score * 0.30, 4)"
+    transformation_python: "round((1.0 - exposure_score) * 0.35 + (0.9 if cashflow_stress_label == 'LOW' else 0.6 if cashflow_stress_label == 'MODERATE' else 0.3 if cashflow_stress_label == 'HIGH' else 0.1) * 0.35 + payment_behaviour_score * 0.30, 4)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "health_category"
+    domain: "composite_health"
+    data_type: "VARCHAR"
+    description: "Customer overall health band: GOOD (>=0.75), FAIR (>=0.55), STRESSED (>=0.35), CRITICAL (<0.35)."
+    source_table: "derived"
+    source_columns: ["composite_health_score"]
+    transformation_sql: "CASE WHEN composite_health_score >= 0.75 THEN 'GOOD' WHEN composite_health_score >= 0.55 THEN 'FAIR' WHEN composite_health_score >= 0.35 THEN 'STRESSED' ELSE 'CRITICAL' END"
+    transformation_python: "'GOOD' if composite_health_score >= 0.75 else 'FAIR' if composite_health_score >= 0.55 else 'STRESSED' if composite_health_score >= 0.35 else 'CRITICAL'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "can_support_arrangement"
+    domain: "composite_health"
+    data_type: "VARCHAR"
+    description: "Affordability recommendation: YES, MARGINAL, NO, REVIEW_REQUIRED."
+    source_table: "derived"
+    source_columns: ["hardship_flag", "vulnerability_flag", "composite_health_score", "dsr", "available_monthly_surplus"]
+    transformation_sql: "CASE WHEN hardship_flag OR vulnerability_flag THEN 'REVIEW_REQUIRED' WHEN composite_health_score < 0.35 OR dsr >= 0.80 THEN 'NO' WHEN composite_health_score < 0.55 OR dsr >= 0.60 OR available_monthly_surplus < 500 THEN 'MARGINAL' ELSE 'YES' END"
+    transformation_python: "'REVIEW_REQUIRED' if (hardship_flag or vulnerability_flag) else 'NO' if (composite_health_score < 0.35 or (dsr is not None and dsr >= 0.80)) else 'MARGINAL' if (composite_health_score < 0.55 or (dsr is not None and dsr >= 0.60) or available_monthly_surplus < 500) else 'YES'"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "hardship_flag"
+    domain: "governance"
+    data_type: "BOOLEAN"
+    description: "Documented economic or medical hardship flag."
+    source_table: "golden_customer_360"
+    source_columns: ["hardship_flag"]
+    transformation_sql: "COALESCE(hardship_flag, FALSE)"
+    transformation_python: "bool(row.get('hardship_flag') or False)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "vulnerability_flag"
+    domain: "governance"
+    data_type: "BOOLEAN"
+    description: "Protected vulnerability flag requiring protective routing."
+    source_table: "golden_customer_360"
+    source_columns: ["vulnerability_flag"]
+    transformation_sql: "COALESCE(vulnerability_flag, FALSE)"
+    transformation_python: "bool(row.get('vulnerability_flag') or False)"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true
+
+  - name: "requires_human_review"
+    domain: "governance"
+    data_type: "BOOLEAN"
+    description: "Compliance gate: flag indicating human review is mandatory before any action."
+    source_table: "derived"
+    source_columns: ["hardship_flag", "vulnerability_flag", "max_dpd_across_portfolio", "dsr"]
+    transformation_sql: "CASE WHEN hardship_flag OR vulnerability_flag OR max_dpd_across_portfolio > 90 OR dsr >= 0.80 THEN TRUE ELSE FALSE END"
+    transformation_python: "bool(hardship_flag or vulnerability_flag or max_dpd > 90 or (dsr is not None and dsr >= 0.80))"
+    nullable: false
+    is_protected_attribute: false
+    used_in_training: true
+    used_in_live_scoring: true

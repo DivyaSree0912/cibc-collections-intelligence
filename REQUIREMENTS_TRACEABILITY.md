@@ -37,9 +37,9 @@
 
 | Req ID | Requirement | Source | Implementation Component | File | Status |
 |---|---|---|---|---|---|
-| REQ-L3-01 | Features from structured data | Build Phase PDF p.3 | Financial health features (P6) | `pipeline/06_features/` | ⏳ PENDING |
+| REQ-L3-01 | Features from structured data | Build Phase PDF p.3 | Structured features (exposure, cashflow, delinquency, behaviour) in P6 | `pipeline/06_features/feature_store.py` | ✅ COMPLETE |
 | REQ-L3-02 | Features from text or voice | Build Phase PDF p.3 | Hardship flag from notes/transcripts | `pipeline/05_collection_memory/` | 🔄 IN PROGRESS |
-| REQ-L3-03 | Single feature definition for training and live scoring | Build Phase PDF p.3 | Feature store with YAML lineage | `data/features/` | ⏳ PENDING |
+| REQ-L3-03 | Single feature definition for training and live scoring | Build Phase PDF p.3 | Unified feature engine & YAML lineage with zero-skew parity | `pipeline/06_features/feature_store.py`, `data/features/feature_definitions.yaml` | ✅ COMPLETE |
 
 ## Layer 4 — Models and Decisioning (NBA)
 

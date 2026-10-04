@@ -92,6 +92,13 @@ def main():
         "run_collection_memory"
     )
 
+    # Phase 6: Governed Feature Store
+    results["P6_features"] = run_phase(
+        "P6 — Governed Feature Store",
+        "pipeline.06_features.feature_store",
+        "run_feature_store"
+    )
+
     # Phase 7: Financial Health Engine
     results["P7_health"] = run_phase(
         "P7 — Financial Health",

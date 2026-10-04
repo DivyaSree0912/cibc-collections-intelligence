@@ -1,5 +1,5 @@
 {
-  "run_ts": "2026-10-04T11:01:51.625457",
+  "run_ts": "2026-10-04T11:32:53.246250",
   "summary": {
     "total": 18,
     "pass": 14,
@@ -15,7 +15,7 @@
       "total_rows": 1020000,
       "affected_pct": 0.0,
       "detail": "Table populated with 1,020,000 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "card_accounts",
@@ -25,7 +25,7 @@
       "total_rows": 660000,
       "affected_pct": 0.0,
       "detail": "Table populated with 660,000 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "loan_accounts",
@@ -35,7 +35,7 @@
       "total_rows": 404500,
       "affected_pct": 0.0,
       "detail": "Table populated with 404,500 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "deposit_accounts",
@@ -45,7 +45,7 @@
       "total_rows": 780000,
       "affected_pct": 0.0,
       "detail": "Table populated with 780,000 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "collections_cases",
@@ -55,7 +55,7 @@
       "total_rows": 367229,
       "affected_pct": 0.0,
       "detail": "Table populated with 367,229 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "contact_history",
@@ -65,7 +65,7 @@
       "total_rows": 2688337,
       "affected_pct": 0.0,
       "detail": "Table populated with 2,688,337 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "promises_to_pay",
@@ -75,7 +75,7 @@
       "total_rows": 238815,
       "affected_pct": 0.0,
       "detail": "Table populated with 238,815 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "agent_notes",
@@ -85,7 +85,7 @@
       "total_rows": 760594,
       "affected_pct": 0.0,
       "detail": "Table populated with 760,594 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "call_transcripts",
@@ -95,7 +95,7 @@
       "total_rows": 25000,
       "affected_pct": 0.0,
       "detail": "Table populated with 25,000 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "external",
@@ -105,7 +105,7 @@
       "total_rows": 1000000,
       "affected_pct": 0.0,
       "detail": "Table populated with 1,000,000 records.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "card_accounts",
@@ -115,7 +115,7 @@
       "total_rows": 660000,
       "affected_pct": 0.0799,
       "detail": "Planted data defect: ~8% missing DPD. Pipeline imputes from cycles_delinquent.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "collections_cases",
@@ -125,7 +125,7 @@
       "total_rows": 367229,
       "affected_pct": 0.0104,
       "detail": "Planted data defect: ~4% bucket mismatch. Pipeline dynamically re-evaluates bucket.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "contact_history",
@@ -135,7 +135,7 @@
       "total_rows": 2688337,
       "affected_pct": 0.0072,
       "detail": "Upstream release REL-0926 moved channel to channel_v2. Coalescing resolves 100% (nulls: 0).",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "customers",
@@ -145,7 +145,7 @@
       "total_rows": 1020000,
       "affected_pct": 0.0132,
       "detail": "Planted challenge: Same individual has multiple CRM IDs. Golden Financial ID unifies them.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "collections_cases",
@@ -155,7 +155,7 @@
       "total_rows": 288426,
       "affected_pct": 0.0359,
       "detail": "96.4% of case customers match CRM directly. Remaining 10,361 matched via account links.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "collections_cases",
@@ -165,7 +165,7 @@
       "total_rows": 367229,
       "affected_pct": 0.0,
       "detail": "Zero negative DPD values found.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "promises_to_pay",
@@ -175,7 +175,7 @@
       "total_rows": 238815,
       "affected_pct": 0.0,
       "detail": "All promise statuses conform to official state definitions.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     },
     {
       "table": "customers",
@@ -185,7 +185,7 @@
       "total_rows": 148,
       "affected_pct": 0.0203,
       "detail": "Protected attributes identified (['gender_code', 'marital_status', 'citizenship_status']); excluded from C360 and decisions.",
-      "run_ts": "2026-10-04T11:01:51.625457"
+      "run_ts": "2026-10-04T11:32:53.246250"
     }
   ]
 }
