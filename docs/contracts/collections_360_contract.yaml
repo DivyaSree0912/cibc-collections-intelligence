@@ -1,0 +1,212 @@
+# docs/contracts/golden_c360_contract.yaml
+# CIBC Collections Intelligence — Open Data Contract Standard (ODCS) v3.0.0
+# Golden Customer 360 (DC-COLL-360)
+
+dataContractSpecification: "0.9.3"
+id: "DC-COLL-360"
+info:
+  title: "Golden Customer 360 (Collections Intelligence Data Product)"
+  version: "1.0.0"
+  description: >
+    Governed, unified single view of customer for collections intelligence at Maple Bank.
+    Anchored on persistent Golden Financial ID (GID-XXXXXXX), unifying disparate records
+    across CRM, Cards, Lending, Core Banking, and Collections.
+  owner: "Collections Intelligence & Analytics Data Office"
+  contact:
+    name: "Collections Platform Lead"
+    email: "collections-platform@maplebank.example.ca"
+
+servicelevels:
+  refresh:
+    frequency: "Daily"
+    schedule: "05:00 America/Toronto (ET)"
+    asOfDate: "2026-09-28"
+  availability: "99.9% uptime during operational business hours"
+  retention: "7 years post write-off or account closure"
+
+terms:
+  allowedUses:
+    - "Collections agent decision support and Next Best Action evaluation"
+    - "Affordability and sustainable repayment plan formulation"
+    - "Portfolio delinquency monitoring and impairment forecasting"
+    - "Vulnerability and financial hardship identification"
+    - "Regulatory compliance and Fair Collections reporting"
+  prohibitedUses:
+    - "Direct marketing, sales campaigns, or cross-selling of new credit products"
+    - "Automated adverse action without authorized human agent review"
+    - "Usage of protected attributes (gender, marital status, citizenship, etc.) in any credit or collection decision"
+    - "External sharing or unmasked third-party disclosure"
+
+governance:
+  classification: "Bank Confidential / Protected Financial Data"
+  privacyTier: "Tier 1 — Governed Customer Financial Identity"
+  fairnessControls:
+    protectedAttributesExcluded: true
+    humanReviewMandatoryForMaterialDecisions: true
+    hardshipProtectionEnforced: true
+
+schema:
+  type: "table"
+  physicalName: "golden_customer_360"
+  storageFormat: "Parquet / DuckDB Table"
+  primaryKey:
+    - "golden_financial_id"
+
+  columns:
+    # ── Identity Domain ──
+    - name: "golden_financial_id"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Unique persistent system-internal Golden Financial ID (e.g., GID-0000001)"
+      required: true
+      unique: true
+      sensitivity: "Internal Key"
+
+    - name: "match_confidence"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Entity resolution confidence score (1.0 = deterministic; >=0.92 = probabilistic auto-link)"
+      required: true
+      qualityRules:
+        - "match_confidence >= 0.85"
+
+    - name: "resolved_name"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Standardized customer legal name from primary CRM record"
+      required: true
+      sensitivity: "Direct PII (Masked on display)"
+
+    - name: "preferred_phone"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "E.164 formatted primary telephone number for servicing contact"
+      required: false
+      sensitivity: "Direct PII (Encrypted at rest)"
+
+    - name: "preferred_email"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Verified customer servicing email address"
+      required: false
+      sensitivity: "Direct PII"
+
+    - name: "customer_fsa"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Forward Sortation Area (first 3 characters of postal code) for local time-zone mapping"
+      required: false
+      sensitivity: "Quasi-identifier (Prohibited from credit/hardship eligibility rules)"
+
+    # ── Income & Cashflow Domain ──
+    - name: "declared_annual_income"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Customer declared annual income in CAD"
+      required: false
+      qualityRules:
+        - "declared_annual_income >= 0"
+
+    - name: "estimated_monthly_inflow"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Estimated monthly verifiable cash inflow (annual income / 12)"
+      required: false
+
+    # ── Portfolio Delinquency & Exposure Domain ──
+    - name: "active_collections_cases"
+      type: "integer"
+      physicalType: "BIGINT"
+      description: "Count of currently open collections cases across all facilities"
+      required: true
+      qualityRules:
+        - "active_collections_cases >= 0"
+
+    - name: "max_dpd_across_portfolio"
+      type: "integer"
+      physicalType: "BIGINT"
+      description: "Maximum days past due across all customer credit facilities (Cards, Loans, LOC, Overdraft)"
+      required: true
+      qualityRules:
+        - "max_dpd_across_portfolio >= 0"
+        - "max_dpd_across_portfolio <= 365"
+
+    - name: "total_overdue_balance"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Aggregate current past-due balance across all accounts in CAD"
+      required: true
+      qualityRules:
+        - "total_overdue_balance >= 0"
+
+    - name: "total_aggregate_exposure"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Total outstanding aggregate exposure across all facilities in CAD"
+      required: true
+      qualityRules:
+        - "total_aggregate_exposure >= total_overdue_balance"
+
+    # ── Hardship & Safeguards ──
+    - name: "hardship_flag"
+      type: "boolean"
+      physicalType: "BOOLEAN"
+      description: "Flag indicating customer has reported financial hardship (illness, job loss, reduced hours)"
+      required: true
+
+    - name: "vulnerability_flag"
+      type: "boolean"
+      physicalType: "BOOLEAN"
+      description: "Protective safeguard flag indicating customer requires certified vulnerable agent assistance"
+      required: true
+
+    # ── Payment Behaviour History ──
+    - name: "ptp_count_24m"
+      type: "integer"
+      physicalType: "BIGINT"
+      description: "Total promises to pay created in preceding 24 months"
+      required: true
+
+    - name: "ptp_fulfilled_24m"
+      type: "integer"
+      physicalType: "BIGINT"
+      description: "Total promises to pay honoured within 2 business days grace period"
+      required: true
+
+    - name: "ptp_fulfillment_rate"
+      type: "number"
+      physicalType: "DOUBLE"
+      description: "Historical promise kept percentage (kept / (kept + partially_kept + broken))"
+      required: false
+      qualityRules:
+        - "ptp_fulfillment_rate >= 0.0 AND ptp_fulfillment_rate <= 100.0"
+
+    # ── Lineage & Traceability ──
+    - name: "snapshot_date"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Effective as-of snapshot date (2026-09-28)"
+      required: true
+
+    - name: "lineage_last_updated"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "ISO timestamp of pipeline execution"
+      required: true
+
+    - name: "pipeline_version"
+      type: "string"
+      physicalType: "VARCHAR"
+      description: "Semantic version of data product pipeline code"
+      required: true
+
+qualityChecks:
+  - checkName: "primary_key_uniqueness"
+    query: "SELECT COUNT(*) - COUNT(DISTINCT golden_financial_id) FROM golden_customer_360"
+    threshold: 0
+  - checkName: "non_negative_balances"
+    query: "SELECT COUNT(*) FROM golden_customer_360 WHERE total_overdue_balance < 0 OR total_aggregate_exposure < 0"
+    threshold: 0
+  - checkName: "protected_attributes_absence"
+    description: "Verified that gender, marital status, and citizenship are absent from golden C360"
+    status: "ENFORCED"
