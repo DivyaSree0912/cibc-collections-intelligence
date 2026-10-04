@@ -1,0 +1,293 @@
+{
+  "run_timestamp": "2026-10-03T12:18:40.702135",
+  "elapsed_seconds": 101.504508,
+  "phases": {
+    "P1_ingest": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:18:40.846196",
+      "tables_loaded": 31,
+      "total_rows": 68162322,
+      "results": [
+        {
+          "table": "customers",
+          "source_system": "CRM",
+          "file": "data/customers.csv",
+          "rows": 1020000,
+          "status": "OK"
+        },
+        {
+          "table": "card_accounts",
+          "source_system": "Cards",
+          "file": "data/card_accounts.csv",
+          "rows": 660000,
+          "status": "OK"
+        },
+        {
+          "table": "loan_accounts",
+          "source_system": "Lending",
+          "file": "data/loan_accounts.csv",
+          "rows": 404500,
+          "status": "OK"
+        },
+        {
+          "table": "deposit_accounts",
+          "source_system": "CoreBanking",
+          "file": "data/deposit_accounts.csv",
+          "rows": 780000,
+          "status": "OK"
+        },
+        {
+          "table": "collections_cases",
+          "source_system": "Collections",
+          "file": "data/collections_cases.csv",
+          "rows": 367229,
+          "status": "OK"
+        },
+        {
+          "table": "contact_history",
+          "source_system": "Collections",
+          "file": "data/contact_history.csv",
+          "rows": 2688337,
+          "status": "OK"
+        },
+        {
+          "table": "promises_to_pay",
+          "source_system": "Collections",
+          "file": "data/promises_to_pay.csv",
+          "rows": 238815,
+          "status": "OK"
+        },
+        {
+          "table": "agent_notes",
+          "source_system": "Collections",
+          "file": "data/agent_notes.csv",
+          "rows": 760594,
+          "status": "OK"
+        },
+        {
+          "table": "call_transcripts",
+          "source_system": "Voice",
+          "file": "data/call_transcripts.csv",
+          "rows": 25000,
+          "status": "OK"
+        },
+        {
+          "table": "voice_samples",
+          "source_system": "Voice",
+          "file": "data/voice_samples.csv",
+          "rows": 2000,
+          "status": "OK"
+        },
+        {
+          "table": "external",
+          "source_system": "Bureau",
+          "file": "data/external.csv",
+          "rows": 1000000,
+          "status": "OK"
+        },
+        {
+          "table": "model_scores",
+          "source_system": "Analytics",
+          "file": "data/model_scores.csv",
+          "rows": 1718841,
+          "status": "OK"
+        },
+        {
+          "table": "offers",
+          "source_system": "Collections",
+          "file": "data/offers.csv",
+          "rows": 40767,
+          "status": "OK"
+        },
+        {
+          "table": "metric_definitions",
+          "source_system": "Reference",
+          "file": "data/metric_definitions.csv",
+          "rows": 15,
+          "status": "OK"
+        },
+        {
+          "table": "benchmark_questions",
+          "source_system": "Benchmark",
+          "file": "data/benchmark_questions.csv",
+          "rows": 35,
+          "status": "OK"
+        },
+        {
+          "table": "reference_documents",
+          "source_system": "Reference",
+          "file": "data/reference_documents.csv",
+          "rows": 19,
+          "status": "OK"
+        },
+        {
+          "table": "hardship_programs",
+          "source_system": "Policy",
+          "file": "data/hardship_programs.csv",
+          "rows": 18,
+          "status": "OK"
+        },
+        {
+          "table": "qa_checklist",
+          "source_system": "QA",
+          "file": "data/qa_checklist.csv",
+          "rows": 10,
+          "status": "OK"
+        },
+        {
+          "table": "agents",
+          "source_system": "Ops",
+          "file": "data/agents.csv",
+          "rows": 1000,
+          "status": "OK"
+        },
+        {
+          "table": "case_assignment_history",
+          "source_system": "Ops",
+          "file": "data/case_assignment_history.csv",
+          "rows": 423830,
+          "status": "OK"
+        },
+        {
+          "table": "agent_shifts",
+          "source_system": "Ops",
+          "file": "data/agent_shifts.csv",
+          "rows": 15317,
+          "status": "OK"
+        },
+        {
+          "table": "channel_capacity",
+          "source_system": "Ops",
+          "file": "data/channel_capacity.csv",
+          "rows": 287,
+          "status": "OK"
+        },
+        {
+          "table": "ops_events",
+          "source_system": "Ops",
+          "file": "data/ops_events.csv",
+          "rows": 6,
+          "status": "OK"
+        },
+        {
+          "table": "geo_reference",
+          "source_system": "Reference",
+          "file": "data/geo_reference.csv",
+          "rows": 656,
+          "status": "OK"
+        },
+        {
+          "table": "code_lookups",
+          "source_system": "Reference",
+          "file": "data/code_lookups.csv",
+          "rows": 113,
+          "status": "OK"
+        },
+        {
+          "table": "loan_instalments",
+          "source_system": "Lending",
+          "file": "data/loan_instalments/*/*.parquet",
+          "rows": 14832472,
+          "status": "OK"
+        },
+        {
+          "table": "transactions",
+          "source_system": "CoreBanking",
+          "file": "data/transactions/*/*.parquet",
+          "rows": 12401924,
+          "status": "OK"
+        },
+        {
+          "table": "card_statements",
+          "source_system": "Cards",
+          "file": "data/card_statements/*/*.parquet",
+          "rows": 7531283,
+          "status": "OK"
+        },
+        {
+          "table": "account_monthly_snapshot",
+          "source_system": "Finance",
+          "file": "data/account_monthly_snapshot/*/*.parquet",
+          "rows": 12569692,
+          "status": "OK"
+        },
+        {
+          "table": "bureau_history",
+          "source_system": "Bureau",
+          "file": "data/bureau_history/*/*.parquet",
+          "rows": 4679562,
+          "status": "OK"
+        },
+        {
+          "table": "salary_credit_history",
+          "source_system": "CoreBanking",
+          "file": "data/salary_credit_history/*/*.parquet",
+          "rows": 6000000,
+          "status": "OK"
+        }
+      ]
+    },
+    "P2_quality": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:19:13.072809",
+      "summary": {
+        "total": 18,
+        "pass": 14,
+        "warn": 4,
+        "fail": 0
+      }
+    },
+    "P3_identity": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:19:41.897723",
+      "total_source_links": 1788432,
+      "unique_golden_ids": 1312053,
+      "review_queue_count": 10365,
+      "elapsed_seconds": 14.73
+    },
+    "P4_c360": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:19:57.476336",
+      "total_customers": 1001879,
+      "active_collections_customers": 93240,
+      "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\golden_customer_360.parquet",
+      "elapsed_seconds": 8.47
+    },
+    "P5_memory": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:20:06.066662",
+      "total_events": 3581511,
+      "hardship_flagged_events": 84289,
+      "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\collection_memory.parquet",
+      "elapsed_seconds": 11.98
+    },
+    "P7_health": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:20:20.215246",
+      "records_processed": 1001879,
+      "health_distribution": {
+        "GOOD": 895535,
+        "FAIR": 44655,
+        "STRESSED": 42541,
+        "CRITICAL": 19148
+      },
+      "human_review_required": 62882,
+      "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\financial_health_features.parquet",
+      "elapsed_seconds": 1.01
+    },
+    "P8_nba": {
+      "status": "OK",
+      "run_ts": "2026-10-03T12:20:21.311489",
+      "total_recommendations": 93240,
+      "action_distribution": {
+        "HUMAN_REVIEW": 58541,
+        "REMINDER": 20909,
+        "PAYMENT_PLAN": 13790
+      },
+      "human_review_required": 61951,
+      "parquet_path": "C:\\Users\\dadid\\.gemini\\antigravity\\scratch\\collections-ai\\data\\golden\\nba_recommendations.parquet",
+      "elapsed_seconds": 0.85
+    }
+  },
+  "overall_status": "OK"
+}

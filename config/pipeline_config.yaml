@@ -1,0 +1,118 @@
+# config/pipeline_config.yaml
+# CIBC Collections Intelligence — Master Pipeline Configuration
+
+project:
+  name: cibc_collections_intelligence
+  version: "1.0.0"
+  snapshot_date: "2026-09-28"
+  bank: "Maple Bank (Synthetic)"
+
+paths:
+  raw_data:      "data/raw/maple_data/maple_collections_release"
+  silver_data:   "data/silver"
+  golden_data:   "data/golden"
+  features_data: "data/features"
+  reports:       "docs/reports"
+  contracts:     "docs/contracts"
+  models:        "models"
+
+database:
+  engine: "duckdb"
+  db_path: "data/maple_collections.duckdb"
+
+identity_resolution:
+  deterministic:
+    match_fields:
+      - "normalized_phone"
+      - "normalized_email"
+      - "tax_id"
+    confidence_score: 1.0
+  probabilistic:
+    name_similarity_threshold: 0.92
+    auto_link_threshold: 0.92
+    review_threshold: 0.85
+    reject_below: 0.85
+  gid_prefix: "GID"
+  gid_digits: 7
+
+governance:
+  protected_attributes:
+    - "gender"
+    - "marital_status"
+    - "citizenship"
+    - "household"
+    - "newcomer"
+    - "accessibility"
+    - "vulnerability"
+    - "accent"
+  hardship_keywords:
+    - "medical"
+    - "hospital"
+    - "job loss"
+    - "unemployed"
+    - "unemployment"
+    - "bereavement"
+    - "deceased"
+    - "disability"
+    - "hardship"
+    - "illness"
+  human_review_triggers:
+    - "vulnerability_flag == True"
+    - "hardship_flag == True"
+    - "dsr > 0.80"
+    - "match_confidence < 0.92"
+    - "dpd > 90"
+
+financial_health:
+  dsr_thresholds:
+    low:      0.35
+    moderate: 0.60
+    high:     0.80
+    severe:   1.00
+  exposure_weight:     0.35
+  cashflow_weight:     0.35
+  behaviour_weight:    0.30
+
+nba:
+  actions:
+    - id: "REMINDER"
+      label: "Digital Reminder"
+      description: "Send a digital reminder via preferred channel"
+      eligibility:
+        max_dpd: 30
+        min_health_score: 0.6
+        hardship_blocked: false
+    - id: "PAYMENT_PLAN"
+      label: "Payment Plan Discussion"
+      description: "Agent to discuss an affordable payment arrangement"
+      eligibility:
+        min_dpd: 15
+        max_dsr: 0.85
+        requires_human_review: true
+    - id: "HUMAN_REVIEW"
+      label: "Specialist Human Review"
+      description: "Route to specialist agent for personal assessment"
+      eligibility:
+        triggers_any:
+          - "vulnerability_flag"
+          - "hardship_flag"
+          - "dpd > 90"
+          - "dsr > 0.80"
+
+llm:
+  provider: "google"
+  model: "gemini-2.0-flash"
+  embedding_model: "models/text-embedding-004"
+  max_tokens: 2048
+  temperature: 0.0  # deterministic for evidence-grounded answers
+
+vector_store:
+  provider: "chromadb"
+  persist_directory: "data/chroma_db"
+  collection_name: "collection_memory"
+  embedding_batch_size: 100
+
+logging:
+  level: "INFO"
+  format: "%(asctime)s | %(levelname)s | %(name)s | %(message)s"
+  log_file: "logs/pipeline.log"

@@ -1,0 +1,30 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+*.pytest_cache/
+
+# Virtual environments
+.venv/
+env/
+venv/
+ENV/
+
+# Large raw datasets (download via scripts/download_data.py)
+data/raw/
+*.zip
+*.tar.gz
+
+# Local database files
+*.duckdb
+*.duckdb.wal
+
+# Local logs
+logs/*.log
+
+# Operating System
+.DS_Store
+Thumbs.db
+
+data/golden/collection_memory.parquet
+data/golden/*.parquet

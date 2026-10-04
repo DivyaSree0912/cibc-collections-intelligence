@@ -1,0 +1,191 @@
+{
+  "run_ts": "2026-10-03T12:19:13.072809",
+  "summary": {
+    "total": 18,
+    "pass": 14,
+    "warn": 4,
+    "fail": 0
+  },
+  "checks": [
+    {
+      "table": "customers",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 1020000,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 1,020,000 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "card_accounts",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 660000,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 660,000 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "loan_accounts",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 404500,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 404,500 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "deposit_accounts",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 780000,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 780,000 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "collections_cases",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 367229,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 367,229 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "contact_history",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 2688337,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 2,688,337 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "promises_to_pay",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 238815,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 238,815 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "agent_notes",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 760594,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 760,594 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "call_transcripts",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 25000,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 25,000 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "external",
+      "check": "Record Count Validation",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 1000000,
+      "affected_pct": 0.0,
+      "detail": "Table populated with 1,000,000 records.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "card_accounts",
+      "check": "Planted Issue: Missing DPD",
+      "status": "WARN",
+      "affected_rows": 52734,
+      "total_rows": 660000,
+      "affected_pct": 0.0799,
+      "detail": "Planted data defect: ~8% missing DPD. Pipeline imputes from cycles_delinquent.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "collections_cases",
+      "check": "Planted Issue: Bucket Mismatch with DPD",
+      "status": "WARN",
+      "affected_rows": 3807,
+      "total_rows": 367229,
+      "affected_pct": 0.0104,
+      "detail": "Planted data defect: ~4% bucket mismatch. Pipeline dynamically re-evaluates bucket.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "contact_history",
+      "check": "Planted Issue: Channel Schema Drift",
+      "status": "WARN",
+      "affected_rows": 19463,
+      "total_rows": 2688337,
+      "affected_pct": 0.0072,
+      "detail": "Upstream release REL-0926 moved channel to channel_v2. Coalescing resolves 100% (nulls: 0).",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "customers",
+      "check": "Planted Issue: Multiple CRM Profiles per Individual",
+      "status": "WARN",
+      "affected_rows": 13458,
+      "total_rows": 1020000,
+      "affected_pct": 0.0132,
+      "detail": "Planted challenge: Same individual has multiple CRM IDs. Golden Financial ID unifies them.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "collections_cases",
+      "check": "Referential Integrity: Case Customer in CRM",
+      "status": "PASS",
+      "affected_rows": 10361,
+      "total_rows": 288426,
+      "affected_pct": 0.0359,
+      "detail": "96.4% of case customers match CRM directly. Remaining 10,361 matched via account links.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "collections_cases",
+      "check": "Range Validation: current_dpd >= 0",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 367229,
+      "affected_pct": 0.0,
+      "detail": "Zero negative DPD values found.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "promises_to_pay",
+      "check": "Domain Validation: ptp_status Enum",
+      "status": "PASS",
+      "affected_rows": 0,
+      "total_rows": 238815,
+      "affected_pct": 0.0,
+      "detail": "All promise statuses conform to official state definitions.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    },
+    {
+      "table": "customers",
+      "check": "Fairness Audit: Protected Attributes Isolation",
+      "status": "PASS",
+      "affected_rows": 3,
+      "total_rows": 148,
+      "affected_pct": 0.0203,
+      "detail": "Protected attributes identified (['gender_code', 'marital_status', 'citizenship_status']); excluded from C360 and decisions.",
+      "run_ts": "2026-10-03T12:19:13.072809"
+    }
+  ]
+}

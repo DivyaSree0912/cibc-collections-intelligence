@@ -1,0 +1,87 @@
+version: 1.0.0
+kind: DataContract
+metadata:
+  name: collections_golden_c360_product
+  domain: collections_intelligence
+  owner: Collections_Data_Engineering_Team
+  status: production
+  description: "Curated Golden Customer 360 data product anchored on the Golden Financial ID with full lineage, quality rules, and fair collections attributes"
+
+dataset:
+  name: golden_customer_360
+  format: delta_lake / iceberg
+  refreshFrequency: hourly_streaming_hybrid
+
+schema:
+  tables:
+    - name: golden_customer_360
+      description: "Resolved multi-system collections master entity"
+      primaryKey: [golden_financial_id]
+      columns:
+        - name: golden_financial_id
+          type: string
+          description: "Canonical identity key resolved across loan, card, deposit, and CRM records"
+          required: true
+          rules:
+            - rule: regex
+              params: { pattern: "^GID-[0-9]{6}$" }
+        - name: resolved_customer_name
+          type: string
+          classification: confidential_pii
+          required: true
+        - name: match_confidence_score
+          type: float
+          description: "Confidence of probabilistic and deterministic entity linkage"
+          rules:
+            - rule: range
+              params: { min: 0.85, max: 1.00 }
+        - name: total_active_facilities_count
+          type: integer
+          description: "Number of active accounts across all lines of business"
+        - name: total_aggregate_exposure
+          type: decimal(18, 2)
+          description: "Total outstanding debt in local currency"
+        - name: max_dpd_across_portfolio
+          type: integer
+          description: "Maximum Days Past Due across any active line"
+        - name: estimated_monthly_inflow
+          type: decimal(18, 2)
+          description: "Trailing 3-month average verified salary/deposit inflow"
+        - name: debt_service_ratio
+          type: float
+          description: "Ratio of total monthly debt commitments to monthly inflow"
+        - name: cash_flow_stress_index
+          type: string
+          enum: [LOW, MODERATE, HIGH, SEVERE]
+          description: "AI-assisted signal indicating liquidity shock"
+        - name: ptp_fulfillment_rate_24m
+          type: float
+          description: "Ratio of honored promises to pay over previous 24 months"
+        - name: vulnerability_hardship_flag
+          type: boolean
+          description: "Indicates detected medical, bereavement, or sudden unemployment hardship"
+        - name: lineage_last_updated
+          type: timestamp
+          required: true
+
+qualityRules:
+  - name: completeness_check
+    type: freshness
+    threshold: 24h
+  - name: entity_uniqueness
+    type: uniqueness
+    columns: [golden_financial_id]
+  - name: positive_exposure
+    type: expression
+    expression: "total_aggregate_exposure >= 0"
+  - name: valid_match_confidence
+    type: expression
+    expression: "match_confidence_score >= 0.85"
+  - name: no_protected_attributes
+    type: exclusion
+    columns: [race, religion, caste, sexual_orientation, medical_diagnostic_codes]
+
+sla:
+  availability: 99.9%
+  freshness: 60 minutes
+  latencyP95: 50ms

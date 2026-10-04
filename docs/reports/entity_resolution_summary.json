@@ -1,0 +1,8 @@
+{
+  "status": "OK",
+  "run_ts": "2026-10-03T12:19:41.897723",
+  "total_source_links": 1788432,
+  "unique_golden_ids": 1312053,
+  "review_queue_count": 10365,
+  "elapsed_seconds": 14.73
+}
