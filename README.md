@@ -109,7 +109,7 @@ The platform is structured across four foundational layers backed by continuous 
 | **2. Architecture Diagram** | [`docs/architecture/cibc_collections_architecture.png`](docs/architecture/cibc_collections_architecture.png) & [`.pdf`](docs/architecture/cibc_collections_architecture.pdf) | High-resolution 4-layer architecture with governance overlay | ✅ **Complete** |
 | **3. Data Contract** | [`docs/contracts/collections_360_contract.yaml`](docs/contracts/collections_360_contract.yaml) | ODCS v3.0.0 Golden C360 data contract (`DC-COLL-360`) | ✅ **Complete** |
 | **4. Data Quality Report** | [`docs/reports/data_quality_report.md`](docs/reports/data_quality_report.md) & [`.json`](docs/reports/data_quality_report.json) | 18 automated checks; quantified defect remediation | ✅ **Complete** |
-| **5. Benchmark Answers** | [`data/benchmark_answers.csv`](data/benchmark_answers.csv) | All 35 benchmark questions (dev + test) evaluated with SQL evidence | ✅ **Complete** |
+| **5. Benchmark Answers** | [`submission/benchmark_answers.csv`](submission/benchmark_answers.csv) | All 35 benchmark questions (dev + test) evaluated with SQL evidence | ✅ **Complete** |
 | **6. Demo Video Guide** | [`docs/DEMO_VIDEO_SCRIPT.md`](docs/DEMO_VIDEO_SCRIPT.md) | Timestamped 4m45s turn-by-turn video walkthrough script | ✅ **Complete** |
 | **7. Pitch Deck** | [`docs/CIBC_Collections_Intelligence_Pitch_Deck.pdf`](docs/CIBC_Collections_Intelligence_Pitch_Deck.pdf) & [`.docx`](docs/CIBC_Collections_Intelligence_Pitch_Deck.docx) | 10-slide executive presentation deck | ✅ **Complete** |
 | **8. Master Test Suite** | [`tests/`](tests/) (34 tests across 4 modules) | Pytest suite: 34/34 tests passed in 38.67s | ✅ **Complete** |
@@ -433,7 +433,7 @@ For deep architectural documentation, specifications, and presentation materials
 - 📐 **System Architecture:** [`docs/architecture/cibc_collections_architecture.pdf`](docs/architecture/cibc_collections_architecture.pdf)
 - 📋 **ODCS Data Contract:** [`docs/contracts/collections_360_contract.yaml`](docs/contracts/collections_360_contract.yaml)
 - 📊 **Data Quality Report:** [`docs/reports/data_quality_report.md`](docs/reports/data_quality_report.md)
-- 🎯 **Benchmark Answers:** [`data/benchmark_answers.csv`](data/benchmark_answers.csv)
+- 🎯 **Benchmark Answers:** [`submission/benchmark_answers.csv`](submission/benchmark_answers.csv)
 - 🎬 **Demo Video Script:** [`docs/DEMO_VIDEO_SCRIPT.md`](docs/DEMO_VIDEO_SCRIPT.md)
 - 📑 **Pitch Deck Presentation:** [`docs/CIBC_Collections_Intelligence_Pitch_Deck.pdf`](docs/CIBC_Collections_Intelligence_Pitch_Deck.pdf)
 - 📜 **Requirements Traceability:** [`REQUIREMENTS_TRACEABILITY.md`](REQUIREMENTS_TRACEABILITY.md)
